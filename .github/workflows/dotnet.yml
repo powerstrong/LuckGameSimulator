@@ -14,6 +14,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      WWWROOT_PATH : /home/runner/work/LuckGameSimulator/LuckGameSimulator/LuckGameSimulator/bin/Release/net8.0/wwwroot
+
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
@@ -28,19 +31,20 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Publish with dotnet
       run: dotnet publish --configuration Release --output build
+      
     # changes the base-tag in index.html from '/' to 'LuckGameSimulator' to match GitHub Pages repository subdirectory
     - name: Change base-tag in index.html from / to LuckGameSimulator
-      run: sed -i 's/<base href="\/" \/>/<base href="\/LuckGameSimulator\/" \/>/g' release/wwwroot/index.html
+      run: sed -i 's/<base href="\/" \/>/<base href="\/LuckGameSimulator\/" \/>/g' $WWWROOT_PATH/index.html
     # copy index.html to 404.html to serve the same file when a file is not found
     - name: copy index.html to 404.html
-      run: cp release/wwwroot/index.html release/wwwroot/404.html
+      run: cp $WWWROOT_PATH/index.html release/wwwroot/404.html
     # add .nojekyll file to tell GitHub pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
     - name: Add .nojekyll file
-      run: touch release/wwwroot/.nojekyll
+      run: touch $WWWROOT_PATH/.nojekyll
       
     - name: Commit wwwroot to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@3.7.1
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: gh-pages
-        FOLDER: release/wwwroot
+        FOLDER: $WWWROOT_PATH
