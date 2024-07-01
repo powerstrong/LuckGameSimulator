@@ -37,11 +37,24 @@ jobs:
       run: dotnet publish --configuration Release --output build/wwwroot
       working-directory: .
 
+    - name: Configure Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
     - name: Deploy to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@releases/v3
-      with:
-        ACCESS_TOKEN: ${{ secrets.GH_PAT }}
-        BASE_BRANCH: main # The branch the action should deploy from.
-        BRANCH: gh-pages # The branch the action should deploy to.
-        FOLDER: build/wwwroot # The folder the action should deploy.
-        SINGLE_COMMIT: true
+      env:
+        GH_TOKEN: ${{ secrets.GH_PAT }}
+      run: |
+        # Clone the gh-pages branch using the provided token
+        git clone --depth=1 --branch=gh-pages https://x-access-token:${GH_TOKEN}@github.com/powerstrong/LuckGameSimulator gh-pages
+        cd gh-pages
+        
+        # Copy the build output to the gh-pages branch
+        rsync -av --delete ../build/wwwroot/ .
+
+        # Commit and push changes
+        git add .
+        git commit -m "Deploying to gh-pages from ${GITHUB_SHA}"
+        git push origin gh-pages
+
