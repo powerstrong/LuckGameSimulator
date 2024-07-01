@@ -43,7 +43,7 @@ jobs:
         GH_TOKEN: ${ secrets.GH_PAT }
       run: |
         # Clone the gh-pages branch using the provided token
-        git clone --depth=1 --branch=gh-pages https://${secrets.GH_PAT}@github.com/powerstrong/LuckGameSimulator gh-pages
+        git clone --depth=1 --branch=gh-pages https://${GH_TOKEN}@github.com/powerstrong/LuckGameSimulator gh-pages
         cd gh-pages
         
         # Copy the build output to the gh-pages branch
