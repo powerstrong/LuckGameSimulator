@@ -23,19 +23,15 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: .
 
     - name: Build
       run: dotnet build --no-restore
-      working-directory: .
 
     - name: Test
       run: dotnet test
-      working-directory: .
 
     - name: Publish with dotnet
-      run: dotnet publish --configuration Release --output build/wwwroot
-      working-directory: .
+      run: dotnet publish
 
     - name: Configure Git
       run: |
@@ -47,7 +43,7 @@ jobs:
         GH_TOKEN: ${ secrets.GH_PAT }
       run: |
         # Clone the gh-pages branch using the provided token
-        git clone --depth=1 --branch=gh-pages https://x-access-token:${GH_TOKEN}@github.com/powerstrong/LuckGameSimulator gh-pages
+        git clone --depth=1 --branch=gh-pages https://${secrets.GH_PAT}@github.com/powerstrong/LuckGameSimulator gh-pages
         cd gh-pages
         
         # Copy the build output to the gh-pages branch
