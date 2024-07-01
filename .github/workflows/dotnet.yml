@@ -44,7 +44,7 @@ jobs:
 
     - name: Deploy to GitHub Pages
       env:
-        GH_TOKEN: ${{ secrets.GH_PAT }}
+        GH_TOKEN: ${ secrets.GH_PAT }
       run: |
         # Clone the gh-pages branch using the provided token
         git clone --depth=1 --branch=gh-pages https://x-access-token:${GH_TOKEN}@github.com/powerstrong/LuckGameSimulator gh-pages
