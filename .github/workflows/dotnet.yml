@@ -13,27 +13,45 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 8.0.x
+
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: LuckGameSimulator/LuckGameSimulator
+
     - name: Build
       run: dotnet build --no-restore
-      working-directory: LuckGameSimulator/LuckGameSimulator
+
     - name: Test
-      run: dotnet Test --no-build --verbosity normal
-      working-directory: LuckGameSimulator/LuckGameSimulator
+      run: dotnet test
+
     - name: Publish with dotnet
-      run: dotnet publish --configuration Release --output build
-      working-directory: LuckGameSimulator/LuckGameSimulator
-    - name: Deploy to Github Pages
-      uses: JamesIves/github-pages-deploy-action@releases/v3
-      with:
-        ACCESS_TOKEN: ${{ secrets.GH_PAT }}
-        BASE_BRANCH: main # The branch the action should deploy from.
-        BRANCH: master # The branch the action should deploy to.
-        FOLDER: LuckGameSimulator/LuckGameSimulator/build/wwwroot # The folder the action should deploy.
-        SINGLE_COMMIT: true
+      run: dotnet publish
+
+    - name: Configure Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+    - name: Deploy to GitHub Pages
+      env:
+        GH_TOKEN: ${ secrets.GH_PAT }
+        WWW_PATH: /home/runner/work/LuckGameSimulator/LuckGameSimulator/LuckGameSimulator/bin/Release/net8.0/publish/wwwroot
+      run: |
+        # Clone the gh-pages branch using the provided token
+        git clone --depth=1 --branch=gh-pages https://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@github.com/powerstrong/LuckGameSimulator gh-pages
+        #cd gh-pages
+        
+        # Copy the build output to the gh-pages branch
+        rsync -av --delete ${WWW_PATH} .
+
+        # Commit and push changes
+        git add .
+        git commit -m "Deploying to gh-pages from ${GITHUB_SHA}"
+        git push origin gh-pages
+
