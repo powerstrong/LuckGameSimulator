@@ -44,7 +44,7 @@ jobs:
       run: |
         # Clone the gh-pages branch using the provided token
         git clone --depth=1 --branch=gh-pages https://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@github.com/powerstrong/LuckGameSimulator gh-pages
-        cd gh-pages
+        #cd gh-pages
         
         # Copy the build output to the gh-pages branch
         rsync -av --delete ../build/wwwroot/ .
